@@ -71,6 +71,7 @@ func main() {
 			return err
 		}
 		conn.Listeners.AddListener(player.NewFBSPlayListener(conn, fbs))
+		//TAF-timing note: #thiS FBS play listener has a starttime in it
 		return nil
 	}
 

@@ -32,6 +32,7 @@ func (fbs *FbsReader) Read(p []byte) (n int, err error) {
 		}
 		fbs.buffer.Write(seg.bytes)
 		fbs.currentTimestamp = int(seg.timestamp)
+		//TAF each time we read a seg, that's the reader time
 	}
 	return fbs.buffer.Read(p)
 }
@@ -173,7 +174,9 @@ func (fbs *FbsReader) ReadSegment() (*FbsSegment, error) {
 
 	//read timestamp
 	var timeSinceStart uint32
-	binary.Read(reader, binary.BigEndian, &timeSinceStart)
+	binary.Read(reader, binary.BigEndian, &timeSinceStart) //
+	//TAF time this refers to the 'time' that the segment occured relative to 
+	//the start of the recording.
 	if err != nil {
 		logger.Error("FbsReader.ReadSegment: read timestamp, error reading rbs file: ", err)
 		return nil, err
