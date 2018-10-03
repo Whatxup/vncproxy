@@ -142,6 +142,15 @@ func (h *FBSPlayListener) sendFbsMessage() {
 	//port (or filesystem thing or whatever) to get the client to be aware of
 	//delays
 
+	//Okay it's ugly but I can just write to a tmpfile for each response with
+	//the delay that would've been there (iff it's more than (eg) 10 seconds)
+	//and then the screenshot reader can, after making the request and getting
+	//a response, also know that the tmpfile has been updated with the #of ms
+
+	//ugly, but it will save me needing more from a structural undertanding of
+	//this code.  I guess we're not making a pull request with the video-extract
+	//feature...  Maybe later.
+
 	err = msg.CopyTo(fbs, h.Conn, fbs)
 	if err != nil {
 		logger.Error("TestServer.NewConnHandler: Error in reading FBS segment: ", err)
