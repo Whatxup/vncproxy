@@ -108,10 +108,16 @@ func (h *FBSPlayListener) sendFbsMessage() {
 	if timeToSleep > 0 {
 		logger.Error("ShouldSleep " + fmt.Sprintf("%v",timeToSleep))
 		if (timeToSleep > (10000) ) {
-			timeToSleep=300
-			logger.Error("SKIPPING")
+			//timeToSleep=300
+			//h.startTime=h.startTime+(timeToSleep-300)
+			//Since we're simulating moving too quickly through time
+			//if I don't change the start time as we go, the 'right'
+			//delay will gradually get longer and longer....
+			logger.Error("SLEEPING 300 instead")
+			time.Sleep(time.Duration(300)*time.Millisecond)
+		} else {
+			time.Sleep(time.Duration(timeToSleep) * time.Millisecond)
 		}
-		time.Sleep(time.Duration(timeToSleep) * time.Millisecond)
 
 
 	}
