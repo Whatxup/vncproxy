@@ -5,6 +5,7 @@ import (
 
 	"io"
 	"time"
+	"fmt"
 	"vncproxy/client"
 	"vncproxy/common"
 	"vncproxy/logger"
@@ -105,13 +106,20 @@ func (h *FBSPlayListener) sendFbsMessage() {
 	timeToSleep := fbs.CurrentTimestamp() - timeSinceStart
 	//TAF currenttimestamp is the READER time
 	if timeToSleep > 0 {
+		logger.Error("ShouldSleep " + fmt.Sprintf("%v",timeToSleep))
+		if (timeToSleep > (10000) ) {
+			timeToSleep=300
+			logger.Error("SKIPPING")
+		}
 		time.Sleep(time.Duration(timeToSleep) * time.Millisecond)
+
+
 	}
 	//TAF is this as simple as just removing the sleep call?
 	//Well, yes....but then you lose the timestamp data.
 
-	//so have the scripted-client (modified 'vncscreenshot') making requests at 
-	// (e.g.) 10 FPS and then remove sleeps here so that each request will get 
+	//so have the scripted-client (modified 'vncscreenshot') making requests at
+	// (e.g.) 10 FPS and then remove sleeps here so that each request will get
 	//the next segment, no framebufferupdaterequests will be wasted (not that we care)
 	//but also no time will be wasted sleeping serverside.
 
@@ -123,10 +131,10 @@ func (h *FBSPlayListener) sendFbsMessage() {
 
 	//Also....Is this technically NOT a real-time playback?  If the client stops
 	//making update requests, do we ever miss any segments?  Nowhere are we scanning
-	//segments to "catch up" 
+	//segments to "catch up"
 
 	//Which is to say, this player sleeps so you'll never get frameupdates too early
-	//but you're more than welcome to get them too late.  
+	//but you're more than welcome to get them too late.
 
 	//Whereas in the real world, the framebuffer might be changing without you requesting
 	//it, and by making a delayed request you could miss things.
