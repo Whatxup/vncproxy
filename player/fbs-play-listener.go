@@ -104,17 +104,28 @@ func (h *FBSPlayListener) sendFbsMessage() {
 	timeSinceStart := int(time.Now().UnixNano()/int64(time.Millisecond)) - h.startTime
 	//TAF - ^this is time since client connect
 	timeToSleep := fbs.CurrentTimestamp() - timeSinceStart
+
+	logger.Error("ShouldSleep " + fmt.Sprintf("%v",timeToSleep))
+
 	//TAF currenttimestamp is the READER time
 	if timeToSleep > 0 {
-		logger.Error("ShouldSleep " + fmt.Sprintf("%v",timeToSleep))
-		if (timeToSleep > (10000) ) {
-			//timeToSleep=300
-			//h.startTime=h.startTime+(timeToSleep-300)
+		//In our simulated desktop, nothing has happened yet, so wait to
+		//respond until it would have.
+		//This might be wrong...A real server probably responds with some
+		//"nothing has changed" message (or a negligible rectangle) in this case
+		//
+		//Say how long we are supposed to sleep for
+		//This is decided based on the original capture...not actuality.
+
+		if (timeToSleep > (99999999)) {
+			logger.Error("SLEEPING 300 instead")
+			time.Sleep(time.Duration(300)*time.Millisecond)
+			logger.Error("Doing the TIME WARP AGAIN")
+			h.startTime=h.startTime-(timeToSleep-500) //the amount we're warping
 			//Since we're simulating moving too quickly through time
 			//if I don't change the start time as we go, the 'right'
 			//delay will gradually get longer and longer....
-			logger.Error("SLEEPING 300 instead")
-			time.Sleep(time.Duration(300)*time.Millisecond)
+
 		} else {
 			time.Sleep(time.Duration(timeToSleep) * time.Millisecond)
 		}
